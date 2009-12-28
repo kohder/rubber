@@ -206,7 +206,14 @@ namespace :rubber do
         # so that we can update all aliases
 
         task :_get_ip, :hosts => instance_item.external_ip do
-          instance_item.internal_ip = capture(print_ip_command).strip
+          # There's no good way to get the internal IP for a Windows host, so just set it to the external
+          # and let the router handle mapping to the internal network.
+          if instance[:platform] == 'windows'
+            instance_item.internal_ip = instance_item.external_ip
+          else
+            instance_item.internal_ip = capture(print_ip_command).strip
+          end
+
           rubber_instances.save()
         end
 
@@ -221,7 +228,7 @@ namespace :rubber do
         end
 
         # Add the aliases for this instance to all other hosts
-        setup_remote_aliases
+        setup_remote_aliases unless instance[:platform] == 'windows'
         setup_dns_aliases
 
         break
