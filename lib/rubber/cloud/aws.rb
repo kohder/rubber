@@ -300,6 +300,24 @@ module Rubber
         return lbs
       end
 
+      def describe_spot_instance_requests(request_id=nil)
+        requests = []
+        opts = {}
+        opts[:request_id] = request_id if request_id
+        response = @ec2.describe_spot_instance_requests(opts)
+        response.spotInstanceRequestSet.item.each do |item|
+          request = {}
+          request[:id] = item.spotInstanceRequestId
+          request[:spot_price] = item.spotPrice
+          request[:state] = item.state
+          request[:created_at] = item.createTime
+          request[:type] = item.launchSpecification.instanceType
+          request[:image_id] = item.launchSpecification.imageId
+          requests << request
+        end if response.spotInstanceRequestSet
+        return requests
+      end
+
     end
 
   end
