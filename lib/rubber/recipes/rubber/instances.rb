@@ -10,7 +10,7 @@ namespace :rubber do
     default_roles = env.instance_roles
     r = get_env("ROLES", "Instance roles (e.g. web,app,db:primary=true)", true, default_roles)
 
-    create_spot_instance = get_env("SPOT_INSTANCE", "Create spot instance", false, false)
+    create_spot_instance = ENV.delete("SPOT_INSTANCE") || env.cloud_providers[env.cloud_provider].spot_instance
 
     if r == '*'
       instance_roles = rubber_cfg.environment.known_roles
