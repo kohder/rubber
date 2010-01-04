@@ -177,15 +177,29 @@ namespace :rubber do
       request_id = cloud.create_spot_instance_request(spot_price, ami, ami_type, security_groups, availability_zone)
 
       print "Waiting for spot instance request to be fulfilled"
+      max_wait_time = env.cloud_providers[env.cloud_provider].spot_instance_request_timeout || (1.0 / 0) # Use the specified timeout value or default to infinite.
       instance_id = nil
       while instance_id.nil? do
         print "."
         sleep 2
+        max_wait_time -= 2
+
         request = cloud.describe_spot_instance_requests(request_id).first
         instance_id = request[:instance_id]
+
+        if max_wait_time < 0 && instance_id.nil?
+          cloud.destroy_spot_instance_request(request[:id])
+
+          print "\n"
+          print "Failed to fulfill spot instance in the time specified. Falling back to on-demand instance creation."
+          break
+        end
       end
+
       print "\n"
-    else
+    end
+
+    if !create_spot_instance || (create_spot_instance && max_wait_time < 0)
       logger.info "Creating instance #{ami}/#{ami_type}/#{security_groups.join(',') rescue 'Default'}/#{availability_zone || 'Default'}"
       instance_id = cloud.create_instance(ami, ami_type, security_groups, availability_zone)
     end

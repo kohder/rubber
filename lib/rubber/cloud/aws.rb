@@ -276,6 +276,10 @@ module Rubber
         end
       end
 
+      def destroy_spot_instance_request(request_id)
+        @ec2.destroy_spot_instance_requests :spot_instance_request_id => request_id
+      end
+
       def describe_load_balancers(name=nil)
         lbs = []
         opts = {}
