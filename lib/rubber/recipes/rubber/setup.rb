@@ -281,7 +281,7 @@ namespace :rubber do
           end
         end
 
-        'EOF'
+        EOF
       ENDSCRIPT
 
       sudo "sh #{script} #{rubber_env.gemsources.join(' ')}"
@@ -414,7 +414,7 @@ namespace :rubber do
     to_install.delete_if {|g, v| installed.has_key?(g) } if gem_cmd == 'install'
     to_install_ver.delete_if {|g, v| installed.has_key?(g) && installed[g].include?(v) }
 
-    # rubygems can only do asingle versioned gem at a time so we need
+    # rubygems can only do a single versioned gem at a time so we need
     # to do the two groups separately
     # install versioned ones first so unversioned don't pull in a newer version
     to_install_ver.each do |g, v|
@@ -427,7 +427,7 @@ namespace :rubber do
       fail "Unable to install gems" if $?.exitstatus > 0
     end
 
-    'EOF'
+    EOF
   ENDSCRIPT
 
   # Helper for installing gems,allows one to respond to prompts

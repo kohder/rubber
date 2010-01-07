@@ -45,7 +45,8 @@ module Rubber
       end
       
       def bind(roles = nil, host = nil)
-        BoundEnv.new(@items, roles, host)
+        roles_arr = roles.nil? ? nil : roles.respond_to?(:to_a) ? roles.to_a : [roles]
+        BoundEnv.new(@items, roles_arr, host)
       end
 
       # combine old and new into a single value:
@@ -145,10 +146,12 @@ module Rubber
           global = global.clone()
           role_overrides = global.delete("roles") || {}
           host_overrides = global.delete("hosts") || {}
-          roles.to_a.each do |role|
-            role_overrides[role].each do |k, v|
-              global[k] = Environment.combine(global[k], v)
-            end if role_overrides[role]
+          unless roles.nil?
+            roles.each do |role|
+              role_overrides[role].each do |k, v|
+                global[k] = Environment.combine(global[k], v)
+              end if role_overrides[role]
+            end
           end
           host_overrides[host].each do |k, v|
             global[k] = Environment.combine(global[k], v)
