@@ -281,7 +281,7 @@ namespace :rubber do
           end
         end
 
-        EOF
+        'EOF'
       ENDSCRIPT
 
       sudo "sh #{script} #{rubber_env.gemsources.join(' ')}"
@@ -427,7 +427,7 @@ namespace :rubber do
       fail "Unable to install gems" if $?.exitstatus > 0
     end
 
-    EOF
+    'EOF'
   ENDSCRIPT
 
   # Helper for installing gems,allows one to respond to prompts
